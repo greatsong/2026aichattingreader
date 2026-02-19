@@ -1,0 +1,879 @@
+/* Evaluation Result */
+.evaluation-result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+}
+
+/* Header */
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+}
+
+.result-header h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.result-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+/* Student Info Input */
+.student-info-input {
+    background: var(--bg-secondary);
+}
+
+.student-info-input h3 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-2);
+}
+
+.student-info-input .info-hint {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-3);
+}
+
+.student-info-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-4);
+}
+
+.student-info-fields .form-group {
+    margin-bottom: 0;
+}
+
+.student-info-fields label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-1);
+    color: var(--text-secondary);
+}
+
+.student-info-fields .input {
+    width: 100%;
+}
+
+/* Score Summary */
+.score-summary {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-8);
+    background: var(--gradient-subtle);
+    border-radius: var(--radius-2xl);
+}
+
+.total-score {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-6);
+}
+
+.grade-circle {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border: 4px solid var(--grade-color);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--grade-glow-color);
+}
+
+.grade {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--grade-color);
+}
+
+.score-info {
+    text-align: left;
+}
+
+.score-value {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.score-max {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-secondary);
+}
+
+.score-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-1);
+}
+
+/* Interaction Badge */
+.interaction-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+}
+
+.interaction-badge.mode-delegation {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fecaca;
+}
+
+.interaction-badge.mode-iterative-debugging {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border-color: #fed7aa;
+}
+
+.interaction-badge.mode-generation-then-comprehension {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-color: #bbf7d0;
+}
+
+.interaction-badge.mode-conceptual-inquiry {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #bfdbfe;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+}
+
+.badge-icon {
+    font-size: var(--font-size-2xl);
+    line-height: 1;
+}
+
+.badge-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.badge-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-value {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+}
+
+/* K-Run Reliability Badge */
+.reliability-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-4);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 1px solid #fbbf24;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+}
+
+.reliability-icon {
+    font-size: var(--font-size-lg);
+}
+
+.reliability-text {
+    color: #92400e;
+    font-weight: var(--font-weight-medium);
+}
+
+/* Criteria Scores */
+.criteria-scores h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-4);
+}
+
+.score-bars {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.score-bar-item {
+    padding: var(--spacing-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.score-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-2);
+}
+
+.score-bar-name {
+    font-weight: var(--font-weight-medium);
+}
+
+.score-bar-value {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.score-bar-track {
+    height: 8px;
+    background: var(--border-primary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.score-bar-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.score-bar-feedback {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-2);
+    padding-top: var(--spacing-2);
+    border-top: 1px dashed var(--border-primary);
+}
+
+/* Detailed Feedback for each criterion */
+.score-detail {
+    margin-top: var(--spacing-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.detail-item {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.detail-item .detail-label {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-1);
+}
+
+.detail-item p {
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+}
+
+.detail-item.evidence {
+    background: var(--color-slate-100);
+    border-left: 3px solid var(--color-slate-400);
+}
+
+.detail-item.strengths {
+    background: var(--color-success-50);
+    border-left: 3px solid var(--color-success-500);
+}
+
+.detail-item.weaknesses {
+    background: var(--color-warning-50);
+    border-left: 3px solid var(--color-warning-500);
+}
+
+.detail-item.improvement {
+    background: var(--color-primary-50);
+    border-left: 3px solid var(--color-primary-500);
+}
+
+@media (prefers-color-scheme: dark) {
+    .detail-item.evidence {
+        background: rgba(100, 116, 139, 0.15);
+    }
+
+    .detail-item.strengths {
+        background: rgba(34, 197, 94, 0.15);
+    }
+
+    .detail-item.weaknesses {
+        background: rgba(245, 158, 11, 0.15);
+    }
+
+    .detail-item.improvement {
+        background: rgba(99, 102, 241, 0.15);
+    }
+}
+
+/* Characteristics */
+.characteristics h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-4);
+}
+
+.characteristic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.characteristic-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.characteristic-list li::before {
+    content: '•';
+    color: var(--color-primary-500);
+    font-weight: bold;
+}
+
+/* Radar Chart Section */
+.radar-chart-section {
+    margin-top: var(--spacing-4);
+}
+
+.radar-chart-section h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-4);
+}
+
+.radar-chart-container {
+    max-width: 300px;
+    max-height: 250px;
+    margin: 0 auto;
+}
+
+/* Highlight Sections */
+.highlight-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-4);
+    margin-top: var(--spacing-4);
+}
+
+.highlight-card {
+    display: flex;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    background: var(--bg-secondary);
+}
+
+.highlight-card.best-point {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.highlight-card.growth-point {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.highlight-icon {
+    font-size: var(--font-size-2xl);
+    flex-shrink: 0;
+}
+
+.highlight-content h4 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    margin: 0 0 var(--spacing-1) 0;
+}
+
+.highlight-title {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-2) 0;
+}
+
+.highlight-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .highlight-sections {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .highlight-card.best-point {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08));
+    }
+
+    .highlight-card.growth-point {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.08));
+    }
+}
+
+/* Qualitative */
+.qualitative h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-4);
+}
+
+.qualitative-content {
+    line-height: var(--line-height-relaxed);
+    color: var(--text-primary);
+    white-space: pre-wrap;
+}
+
+/* Suggestions */
+.suggestions h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-4);
+}
+
+.suggestion-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.suggestion-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    background: var(--color-primary-50);
+    border-radius: var(--radius-lg);
+    color: var(--color-primary-700);
+}
+
+@media (prefers-color-scheme: dark) {
+    .suggestion-list li {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--color-primary-300);
+    }
+}
+
+.suggestion-list li::before {
+    content: '💡';
+    flex-shrink: 0;
+}
+
+/* Student Record */
+.student-record h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.record-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.record-content {
+    padding: var(--spacing-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-family);
+    line-height: var(--line-height-relaxed);
+    white-space: pre-wrap;
+    margin-bottom: var(--spacing-3);
+}
+
+.record-notice {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    padding: var(--spacing-3);
+    background: var(--color-warning-50);
+    border-radius: var(--radius-md);
+}
+
+@media (prefers-color-scheme: dark) {
+    .record-notice {
+        background: rgba(245, 158, 11, 0.1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .total-score {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .score-info {
+        text-align: center;
+    }
+
+    .grade-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .grade {
+        font-size: var(--font-size-2xl);
+    }
+}
+
+/* PDF Only Header */
+.pdf-only-header {
+    display: none;
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 2px solid var(--color-primary-500);
+}
+
+.pdf-only-header h1 {
+    font-size: 24px;
+    /* Reduced from 32px for compactness */
+    margin-bottom: var(--spacing-4);
+    color: var(--color-primary-600);
+    text-align: center;
+    letter-spacing: -0.02em;
+}
+
+.pdf-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #f8fafc;
+    padding: var(--spacing-4);
+    border-radius: var(--radius-lg);
+    border: 1px solid #e2e8f0;
+    gap: var(--spacing-4);
+}
+
+.pdf-student-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    flex: 1;
+}
+
+.pdf-info-group {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: baseline;
+}
+
+.info-label {
+    font-size: 12px;
+    font-weight: var(--font-weight-bold);
+    color: #64748b;
+    min-width: 70px;
+}
+
+.info-value {
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: #1e293b;
+    word-break: break-all;
+    white-space: pre-wrap;
+    line-height: var(--line-height-normal);
+}
+
+.pdf-date {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* PDF Generation Styles */
+body.is-pdf-rendering .pdf-only-header {
+    display: block !important;
+}
+
+body.is-pdf-rendering {
+    background: white !important;
+}
+
+body.is-pdf-rendering .evaluation-result {
+    width: 794px !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+    overflow: visible !important;
+}
+
+/* Page Containers */
+body.is-pdf-rendering .pdf-summary-page {
+    padding: 25px 30px !important;
+    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px !important;
+}
+
+body.is-pdf-rendering .pdf-details-page {
+    padding: 30px !important;
+    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3) !important;
+}
+
+/* Condense Score Summary */
+body.is-pdf-rendering .score-summary {
+    padding: 12px 20px !important;
+    margin-bottom: 0 !important;
+    background: #f8fafc !important;
+    border: 2px solid #cbd5e1 !important;
+    border-radius: var(--radius-xl) !important;
+}
+
+body.is-pdf-rendering .grade-circle {
+    width: 70px !important;
+    height: 70px !important;
+    background: white !important;
+    border-width: 4px !important;
+}
+
+body.is-pdf-rendering .grade {
+    font-size: 24px !important;
+}
+
+body.is-pdf-rendering .score-value {
+    font-size: 28px !important;
+}
+
+body.is-pdf-rendering .score-max {
+    font-size: 16px !important;
+}
+
+body.is-pdf-rendering .score-label {
+    font-size: 11px !important;
+}
+
+/* Compact Characteristics */
+body.is-pdf-rendering .characteristics {
+    padding: 10px 15px !important;
+}
+
+body.is-pdf-rendering .characteristics h3 {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+}
+
+body.is-pdf-rendering .characteristic-list {
+    gap: 4px !important;
+}
+
+body.is-pdf-rendering .characteristic-list li {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+}
+
+/* UI Elements to Hide */
+body.is-pdf-rendering .result-header,
+body.is-pdf-rendering .result-actions,
+body.is-pdf-rendering .student-info-input,
+body.is-pdf-rendering .record-notice,
+body.is-pdf-rendering .btn,
+body.is-pdf-rendering .nav,
+body.is-pdf-rendering .header,
+body.is-pdf-rendering .footer {
+    display: none !important;
+}
+
+/* Page Break Controls */
+body.is-pdf-rendering .html2pdf__page-break {
+    display: block;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    page-break-before: always !important;
+    break-before: page !important;
+}
+
+/* Detailed Evaluation Sections */
+body.is-pdf-rendering .criteria-scores,
+body.is-pdf-rendering .qualitative,
+body.is-pdf-rendering .suggestions,
+body.is-pdf-rendering .student-record {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* CRITICAL: Allow cards to break across pages to avoid huge gaps */
+body.is-pdf-rendering .score-bar-item {
+    break-inside: auto !important;
+    /* ALLOW BREAKING */
+    page-break-inside: auto !important;
+    margin-bottom: var(--spacing-6) !important;
+    padding-bottom: var(--spacing-4) !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    position: relative !important;
+}
+
+/* Protect the header of the item from being separated from its bar */
+body.is-pdf-rendering .score-bar-header {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* Keep internal blocks together if they are small */
+body.is-pdf-rendering .detail-item,
+body.is-pdf-rendering .characteristic-list li,
+body.is-pdf-rendering .suggestion-list li {
+    break-inside: avoid !important;
+    /* Sub-items stay together */
+    page-break-inside: avoid !important;
+    margin-bottom: var(--spacing-2) !important;
+}
+
+/* Header Protection */
+body.is-pdf-rendering h2,
+body.is-pdf-rendering h3 {
+    margin-top: 0 !important;
+    margin-bottom: var(--spacing-4) !important;
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+}
+
+/* Zero-Clipping & Density */
+body.is-pdf-rendering .card {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: var(--spacing-4) !important;
+    margin-bottom: var(--spacing-4) !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Global text wrap */
+body.is-pdf-rendering * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+body.is-pdf-rendering p,
+body.is-pdf-rendering .qualitative-content,
+body.is-pdf-rendering .record-content,
+body.is-pdf-rendering .info-value,
+body.is-pdf-rendering .detail-item p {
+    white-space: pre-wrap !important;
+    word-break: normal !important;
+    overflow-wrap: anywhere !important;
+    line-height: var(--line-height-relaxed) !important;
+}
+
+body.is-pdf-rendering .score-detail {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: var(--spacing-2) !important;
+    margin-top: var(--spacing-4) !important;
+}
+
+/* PDF: Radar Chart - COMPACT */
+body.is-pdf-rendering .radar-chart-section {
+    margin-top: 6px !important;
+    padding: 8px !important;
+}
+
+body.is-pdf-rendering .radar-chart-section h3 {
+    font-size: 13px !important;
+    margin-bottom: 4px !important;
+}
+
+body.is-pdf-rendering .radar-chart-container {
+    max-width: 200px !important;
+    max-height: 160px !important;
+    margin: 0 auto !important;
+}
+
+body.is-pdf-rendering .radar-chart-container canvas {
+    max-width: 100% !important;
+    max-height: 160px !important;
+}
+
+/* PDF: Highlight Sections - COMPACT */
+body.is-pdf-rendering .highlight-sections {
+    display: flex !important;
+    gap: 10px !important;
+    margin-top: 6px !important;
+}
+
+body.is-pdf-rendering .highlight-card {
+    flex: 1 !important;
+    padding: 8px 10px !important;
+    border-radius: var(--radius-md) !important;
+}
+
+body.is-pdf-rendering .highlight-card.best-point {
+    background: #ecfdf5 !important;
+    border: 1px solid #a7f3d0 !important;
+}
+
+body.is-pdf-rendering .highlight-card.growth-point {
+    background: #fffbeb !important;
+    border: 1px solid #fcd34d !important;
+}
+
+body.is-pdf-rendering .highlight-icon {
+    font-size: 18px !important;
+}
+
+body.is-pdf-rendering .highlight-content h4 {
+    font-size: 10px !important;
+    color: #64748b !important;
+    margin-bottom: 2px !important;
+}
+
+body.is-pdf-rendering .highlight-title {
+    font-size: 11px !important;
+    color: #1e293b !important;
+    margin-bottom: 3px !important;
+}
+
+body.is-pdf-rendering .highlight-text {
+    font-size: 10px !important;
+    color: #475569 !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+}

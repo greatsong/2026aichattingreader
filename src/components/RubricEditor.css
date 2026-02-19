@@ -1,0 +1,219 @@
+/* Rubric Editor */
+.rubric-editor {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-6);
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+}
+
+.editor-header h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.editor-actions-top {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+/* Import Section */
+.import-section {
+    padding: var(--spacing-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-6);
+}
+
+.import-section label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+}
+
+.import-section textarea {
+    min-height: 100px;
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+}
+
+.import-actions {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-top: var(--spacing-3);
+}
+
+/* Error */
+.editor-error {
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-error-50);
+    color: var(--color-error-600);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-4);
+    font-size: var(--font-size-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+    .editor-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--color-error-500);
+    }
+}
+
+/* Criteria Section */
+.criteria-section {
+    margin-top: var(--spacing-6);
+}
+
+.criteria-section>.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.criteria-section>.section-header h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+}
+
+.weight-sum {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.weight-warning {
+    color: var(--color-error-500);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Criterion Card */
+.criterion-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+}
+
+.criterion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-4);
+}
+
+.criterion-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+}
+
+.remove-btn {
+    color: var(--text-tertiary);
+}
+
+.remove-btn:hover {
+    color: var(--color-error-500);
+}
+
+/* Form Row */
+.form-row {
+    display: flex;
+    gap: var(--spacing-4);
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-2 {
+    flex: 2;
+}
+
+/* Levels Section */
+.levels-section {
+    margin-top: var(--spacing-4);
+}
+
+.levels-section>label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+}
+
+.levels-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.level-row {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+}
+
+.level-score {
+    width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.level-description {
+    flex: 1;
+}
+
+.add-level-btn {
+    margin-top: var(--spacing-2);
+}
+
+/* Add Criterion Button */
+.add-criterion-btn {
+    width: 100%;
+}
+
+/* Editor Actions */
+.editor-actions {
+    display: flex;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--border-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    .editor-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .editor-actions-top {
+        justify-content: stretch;
+    }
+
+    .editor-actions-top .btn {
+        flex: 1;
+    }
+}
