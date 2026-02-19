@@ -96,10 +96,10 @@ function Admin() {
 
                 {saveMessage && <div className="save-message animate-slideUp">✓ {saveMessage}</div>}
 
-                <div className="tabs">
-                    <button className={`tab ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')}>🔑 API 설정</button>
-                    <button className={`tab ${activeTab === 'rubrics' ? 'active' : ''}`} onClick={() => setActiveTab('rubrics')}>📋 루브릭 관리</button>
-                    <button className={`tab ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')}>🔒 보안</button>
+                <div className="tabs" role="tablist">
+                    <button className={`tab ${activeTab === 'api' ? 'active' : ''}`} onClick={() => setActiveTab('api')} role="tab" aria-selected={activeTab === 'api'}>🔑 API 설정</button>
+                    <button className={`tab ${activeTab === 'rubrics' ? 'active' : ''}`} onClick={() => setActiveTab('rubrics')} role="tab" aria-selected={activeTab === 'rubrics'}>📋 루브릭 관리</button>
+                    <button className={`tab ${activeTab === 'security' ? 'active' : ''}`} onClick={() => setActiveTab('security')} role="tab" aria-selected={activeTab === 'security'}>🔒 보안</button>
                 </div>
 
                 <div className="tab-content">

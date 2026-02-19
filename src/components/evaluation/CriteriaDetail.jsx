@@ -7,6 +7,15 @@ function getScoreBarWidth(score, maxScore = 5) {
     return `${(score / maxScore) * 100}%`
 }
 
+function getScoreLevel(score, maxScore) {
+    const percentage = (score / maxScore) * 100
+    if (percentage >= 90) return { label: '우수', className: 'level-excellent' }
+    if (percentage >= 70) return { label: '양호', className: 'level-good' }
+    if (percentage >= 50) return { label: '보통', className: 'level-average' }
+    if (percentage >= 30) return { label: '미흡', className: 'level-poor' }
+    return { label: '부족', className: 'level-low' }
+}
+
 /**
  * evidence 텍스트에서 「」 인용문을 하이라이팅하여 렌더링
  */
@@ -27,17 +36,24 @@ function CriteriaDetail({ criteriaScores, qualitativeEvaluation, suggestions, st
             <div className="criteria-scores card">
                 <h3>📋 항목별 평가</h3>
                 <div className="score-bars">
-                    {criteriaScores.map((cs, index) => (
+                    {criteriaScores.map((cs, index) => {
+                        const level = getScoreLevel(cs.score, cs.maxScore)
+                        return (
                         <div key={index} className="score-bar-item">
                             <div className="score-bar-header">
                                 <span className="score-bar-name">{cs.name}</span>
-                                <span className="score-bar-value">
-                                    {cs.score} / {cs.maxScore} ({cs.percentage}%)
-                                </span>
+                                <div className="score-bar-meta">
+                                    <span className="score-bar-value">
+                                        {cs.score} / {cs.maxScore} ({cs.percentage}%)
+                                    </span>
+                                    <span className={`score-level-badge ${level.className}`}>
+                                        {level.label}
+                                    </span>
+                                </div>
                             </div>
                             <div className="score-bar-track">
                                 <div
-                                    className="score-bar-fill"
+                                    className={`score-bar-fill ${level.className}`}
                                     style={{ width: getScoreBarWidth(cs.score, cs.maxScore) }}
                                 />
                             </div>
@@ -111,7 +127,7 @@ function CriteriaDetail({ criteriaScores, qualitativeEvaluation, suggestions, st
                                 })()}
                             </div>
                         </div>
-                    ))}
+                    )})}
                 </div>
             </div>
 

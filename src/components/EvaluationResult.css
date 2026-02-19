@@ -247,6 +247,68 @@
     transition: width var(--transition-slow);
 }
 
+/* Score Level Badge */
+.score-bar-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 0.5rem);
+}
+
+.score-level-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-full, 9999px);
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+    white-space: nowrap;
+}
+
+.score-level-badge.level-excellent {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.score-level-badge.level-good {
+    background: rgba(99, 102, 241, 0.15);
+    color: #4f46e5;
+}
+
+.score-level-badge.level-average {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+}
+
+.score-level-badge.level-poor {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+.score-level-badge.level-low {
+    background: rgba(239, 68, 68, 0.2);
+    color: #b91c1c;
+}
+
+/* Score bar fill colors by level */
+.score-bar-fill.level-excellent {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.score-bar-fill.level-good {
+    background: var(--gradient-primary);
+}
+
+.score-bar-fill.level-average {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.score-bar-fill.level-poor {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.score-bar-fill.level-low {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+
 .score-bar-feedback {
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
@@ -385,6 +447,18 @@
     max-width: 300px;
     max-height: 250px;
     margin: 0 auto;
+}
+
+/* Radar Chart Insight */
+.radar-insight {
+    text-align: center;
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-secondary, #52525b);
+    margin-top: var(--spacing-3, 0.75rem);
+    padding: var(--spacing-3, 0.75rem);
+    background: var(--bg-secondary, #fafafa);
+    border-radius: var(--radius-lg, 0.75rem);
+    line-height: 1.5;
 }
 
 /* Highlight Sections */
@@ -853,6 +927,17 @@ body.is-pdf-rendering .radar-chart-container canvas {
     max-height: 160px !important;
 }
 
+body.is-pdf-rendering .score-level-badge {
+    font-size: 9px !important;
+    padding: 1px 6px !important;
+}
+
+body.is-pdf-rendering .radar-insight {
+    font-size: 10px !important;
+    padding: 6px !important;
+    margin-top: 4px !important;
+}
+
 /* PDF: Highlight Sections - COMPACT */
 body.is-pdf-rendering .highlight-sections {
     display: flex !important;
@@ -978,4 +1063,119 @@ body.is-pdf-rendering .highlight-text {
     text-align: center;
     color: var(--color-neutral-500, #6b7280);
     padding: 1.5rem;
+}
+
+/* Growth Insight */
+.growth-insight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg, 0.75rem);
+    font-size: 0.9rem;
+}
+
+.growth-insight.positive {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.04));
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.growth-insight.neutral {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.04));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.growth-insight.negative {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.04));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.insight-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.insight-text {
+    margin: 0;
+    color: var(--text-primary, #18181b);
+    line-height: 1.4;
+}
+
+/* Grade Message Card */
+.grade-message-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4, 1rem);
+    padding: var(--spacing-4, 1rem) var(--spacing-5, 1.25rem);
+    border-radius: var(--radius-xl, 1rem);
+    margin-top: var(--spacing-4, 1rem);
+}
+
+.grade-message-emoji {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.grade-message-content strong {
+    display: block;
+    font-size: var(--font-size-lg, 1.125rem);
+    color: var(--text-primary, #18181b);
+    margin-bottom: 0.25rem;
+}
+
+.grade-message-content p {
+    margin: 0;
+    font-size: var(--font-size-sm, 0.875rem);
+    color: var(--text-secondary, #52525b);
+    line-height: 1.5;
+}
+
+/* Grade level colors */
+.grade-message-card.grade-aplus,
+.grade-message-card.grade-a {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.grade-message-card.grade-bplus,
+.grade-message-card.grade-b {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.grade-message-card.grade-cplus,
+.grade-message-card.grade-c {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.grade-message-card.grade-dplus,
+.grade-message-card.grade-d,
+.grade-message-card.grade-f {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.04));
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* PDF rendering rules for new elements */
+body.is-pdf-rendering .growth-chart,
+body.is-pdf-rendering .growth-insight {
+    display: none !important;
+}
+
+body.is-pdf-rendering .grade-message-card {
+    padding: 8px 12px !important;
+    margin-top: 6px !important;
+}
+
+body.is-pdf-rendering .grade-message-emoji {
+    font-size: 20px !important;
+}
+
+body.is-pdf-rendering .grade-message-content strong {
+    font-size: 12px !important;
+}
+
+body.is-pdf-rendering .grade-message-content p {
+    font-size: 10px !important;
 }

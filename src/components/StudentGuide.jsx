@@ -258,6 +258,8 @@ function StudentGuide() {
             <button
                 className={`guide-toggle ${isOpen ? 'open' : ''}`}
                 onClick={() => setIsOpen(!isOpen)}
+                aria-expanded={isOpen}
+                aria-controls="student-guide-panel"
             >
                 <span className="toggle-icon">📚</span>
                 <span className="toggle-text">사용 가이드</span>
@@ -265,7 +267,7 @@ function StudentGuide() {
             </button>
 
             {isOpen && (
-                <div className="guide-panel">
+                <div className="guide-panel" id="student-guide-panel">
                     <div className="guide-header">
                         <h2>🎓 AI 채팅 평가 시스템 사용 가이드</h2>
                         <p>고등학생을 위한 완벽 가이드</p>
@@ -277,6 +279,8 @@ function StudentGuide() {
                                 <button
                                     className={`section-header ${activeSection === section.id ? 'active' : ''}`}
                                     onClick={() => toggleSection(section.id)}
+                                    aria-expanded={activeSection === section.id}
+                                    aria-controls={`guide-section-${section.id}`}
                                 >
                                     <span className="section-icon">{section.icon}</span>
                                     <span className="section-title">{section.title}</span>
@@ -285,7 +289,7 @@ function StudentGuide() {
                                     </span>
                                 </button>
                                 {activeSection === section.id && (
-                                    <div className="section-content">
+                                    <div className="section-content" id={`guide-section-${section.id}`}>
                                         {section.content}
                                     </div>
                                 )}

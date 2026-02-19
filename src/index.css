@@ -43,6 +43,10 @@
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
 
+  /* Slate aliases (used by evidence detail-items) */
+  --color-slate-100: #f1f5f9;
+  --color-slate-400: #94a3b8;
+
   /* Colors - Neutral */
   --color-neutral-50: #fafafa;
   --color-neutral-100: #f4f4f5;
@@ -72,6 +76,7 @@
   --border-primary: var(--color-neutral-200);
   --border-secondary: var(--color-neutral-300);
   --border-focus: var(--color-primary-500);
+  --border-color: var(--border-primary);
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-accent-500) 100%);
@@ -131,8 +136,9 @@
 
   /* Transitions */
   --transition-fast: 150ms ease;
-  --transition-base: 200ms ease;
-  --transition-slow: 300ms ease;
+  --transition-base: 250ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
 
   /* Z-Index */
   --z-dropdown: 100;

@@ -13,6 +13,52 @@ import '../EvaluationResult.css'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
+function getTrendMessage(scores) {
+    if (!scores || scores.length < 2) return null
+
+    const latest = scores[scores.length - 1]
+    const previous = scores[scores.length - 2]
+    const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+    const maxScore = Math.max(...scores)
+
+    if (scores.length === 2) {
+        if (latest > previous) return { icon: '📈', message: '다시 상승세예요! 이 흐름을 유지해보세요.', type: 'positive' }
+        if (latest < previous) return { icon: '🌱', message: '점수가 내려갔지만 괜찮아요. 피드백을 확인하고 다시 도전해보세요!', type: 'neutral' }
+        return { icon: '🎯', message: '안정적인 수준을 유지하고 있어요. 한 단계 도약을 시도해볼까요?', type: 'neutral' }
+    }
+
+    // 3+ scores
+    const last3 = scores.slice(-3)
+    const isConsistentlyImproving = last3.every((s, i) => i === 0 || s >= last3[i - 1])
+    const isFlat = last3.every((s, i) => i === 0 || Math.abs(s - last3[i - 1]) <= 2)
+
+    if (isConsistentlyImproving && !isFlat) {
+        return { icon: '🚀', message: '꾸준히 성장하고 있어요! 지금처럼 계속해보세요.', type: 'positive' }
+    }
+
+    if (latest === maxScore) {
+        return { icon: '🏆', message: '최고 점수를 달성했어요! 대단한 발전입니다.', type: 'positive' }
+    }
+
+    if (latest > previous && !isConsistentlyImproving) {
+        return { icon: '📈', message: '다시 상승세예요! 이 흐름을 유지해보세요.', type: 'positive' }
+    }
+
+    if (isFlat) {
+        return { icon: '🎯', message: '안정적인 수준을 유지하고 있어요. 한 단계 도약을 시도해볼까요?', type: 'neutral' }
+    }
+
+    if (latest < previous && latest >= avg) {
+        return { icon: '💪', message: '조금 주춤했지만 평균 이상이에요. 힘내세요!', type: 'neutral' }
+    }
+
+    if (latest < previous) {
+        return { icon: '🌱', message: '점수가 내려갔지만 괜찮아요. 피드백을 확인하고 다시 도전해보세요!', type: 'neutral' }
+    }
+
+    return null
+}
+
 function GrowthChart({ history, onClear }) {
     if (!history || history.length === 0) {
         return (
@@ -39,6 +85,8 @@ function GrowthChart({ history, onClear }) {
     const lastChange = scores.length >= 2
         ? scores[scores.length - 1] - scores[scores.length - 2]
         : 0
+
+    const trendMessage = getTrendMessage(scores)
 
     const data = {
         labels,
@@ -118,6 +166,12 @@ function GrowthChart({ history, onClear }) {
                             </span>
                         </div>
                     </div>
+                    {trendMessage && (
+                        <div className={`growth-insight ${trendMessage.type}`}>
+                            <span className="insight-icon">{trendMessage.icon}</span>
+                            <p className="insight-text">{trendMessage.message}</p>
+                        </div>
+                    )}
                 </>
             )}
         </div>

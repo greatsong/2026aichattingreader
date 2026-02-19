@@ -2,6 +2,17 @@
  * ScoreOverview - 점수 요약, 학습 모드 배지, K-run 신뢰도, 특징, 하이라이트
  */
 
+function getGradeMessage(grade, totalScore) {
+    if (totalScore >= 95) return { emoji: '🌟', message: '탁월한 AI 활용 역량을 보여주었습니다!', description: 'AI와의 소통에서 깊이 있는 사고력을 발휘했어요.' }
+    if (totalScore >= 90) return { emoji: '✨', message: '우수한 역량입니다!', description: '비판적 사고와 창의적 활용이 돋보여요.' }
+    if (totalScore >= 85) return { emoji: '👏', message: '잘하고 있어요!', description: '몇 가지 부분만 보완하면 더 좋은 결과를 얻을 수 있어요.' }
+    if (totalScore >= 80) return { emoji: '👍', message: '양호한 수준이에요.', description: '개선 제안을 참고해서 다음에 도전해보세요.' }
+    if (totalScore >= 75) return { emoji: '💡', message: '성장 가능성이 있어요!', description: '아래 피드백을 잘 읽고 하나씩 개선해보세요.' }
+    if (totalScore >= 70) return { emoji: '🌱', message: '기초를 다지는 단계예요.', description: 'AI와 대화하는 방법을 연습해보세요.' }
+    if (totalScore >= 60) return { emoji: '📚', message: '더 많은 연습이 필요해요.', description: '사용 가이드를 참고하고 다시 시도해보세요.' }
+    return { emoji: '🔄', message: '다시 도전해보세요!', description: 'AI와 충분한 대화를 나누고 다시 평가해보세요.' }
+}
+
 function ScoreOverview({ result, gradeColors }) {
     const {
         totalScore,
@@ -74,6 +85,20 @@ function ScoreOverview({ result, gradeColors }) {
                     </div>
                 )}
             </div>
+
+            {/* 등급별 메시지 */}
+            {(() => {
+                const gradeMsg = getGradeMessage(grade, totalScore)
+                return (
+                    <div className={`grade-message-card grade-${grade.replace('+', 'plus').toLowerCase()}`}>
+                        <span className="grade-message-emoji">{gradeMsg.emoji}</span>
+                        <div className="grade-message-content">
+                            <strong>{gradeMsg.message}</strong>
+                            <p>{gradeMsg.description}</p>
+                        </div>
+                    </div>
+                )
+            })()}
 
             {/* 주요 특징 */}
             <div className="characteristics card">

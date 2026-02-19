@@ -236,7 +236,7 @@ function Home() {
 
                 {/* Loading Overlay */}
                 {isLoading && (
-                    <div className="loading-overlay">
+                    <div className="loading-overlay" role="alert" aria-live="polite">
                         <div className="loading-content">
                             <div className="spinner"></div>
                             <p className="loading-text">{loadingMessage}</p>
