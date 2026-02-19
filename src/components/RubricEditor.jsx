@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { useApp } from '../context/AppContext'
+import { useEvaluation } from '../context/EvaluationContext'
+import { RUBRIC_TEMPLATES } from '../data/rubricTemplates'
 import './RubricEditor.css'
 
 function RubricEditor({ rubric, onSave, onCancel }) {
-    const { DEFAULT_RUBRIC } = useApp()
+    const { DEFAULT_RUBRIC } = useEvaluation()
 
     const [name, setName] = useState(rubric?.name || '')
     const [criteria, setCriteria] = useState(
@@ -11,6 +12,7 @@ function RubricEditor({ rubric, onSave, onCancel }) {
     )
     const [importText, setImportText] = useState('')
     const [showImport, setShowImport] = useState(false)
+    const [showTemplates, setShowTemplates] = useState(false)
     const [error, setError] = useState('')
 
     const addCriterion = () => {
@@ -113,6 +115,13 @@ function RubricEditor({ rubric, onSave, onCancel }) {
         setCriteria(DEFAULT_RUBRIC.criteria.map(c => ({ ...c })))
     }
 
+    const loadTemplate = (template) => {
+        setName(template.name)
+        setCriteria(template.criteria.map(c => ({ ...c, levels: c.levels.map(l => ({ ...l })) })))
+        setShowTemplates(false)
+        setError('')
+    }
+
     const handleSave = () => {
         if (!name.trim()) {
             setError('루브릭 이름을 입력해주세요.')
@@ -156,6 +165,13 @@ function RubricEditor({ rubric, onSave, onCancel }) {
                     >
                         📋 기본 템플릿
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => setShowTemplates(!showTemplates)}
+                        className="btn btn-ghost btn-sm"
+                    >
+                        📚 교과 템플릿
+                    </button>
                 </div>
             </div>
 
@@ -187,6 +203,31 @@ function RubricEditor({ rubric, onSave, onCancel }) {
                         >
                             취소
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Template Selection */}
+            {showTemplates && (
+                <div className="template-section">
+                    <label>교과별 루브릭 템플릿 선택</label>
+                    <div className="template-grid">
+                        {RUBRIC_TEMPLATES.map(template => (
+                            <div
+                                key={template.id}
+                                className="template-card"
+                                onClick={() => loadTemplate(template)}
+                            >
+                                <span className="template-icon">{template.icon}</span>
+                                <div className="template-info">
+                                    <h4>{template.name}</h4>
+                                    <p>{template.description}</p>
+                                    <span className="template-criteria-count">
+                                        {template.criteria.length}개 평가 항목
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}

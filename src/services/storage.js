@@ -80,3 +80,29 @@ export function decodeApiKey(encoded) {
         return encoded
     }
 }
+
+/**
+ * SHA-256 비밀번호 해싱 (Web Crypto API)
+ */
+export async function hashPassword(password) {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(password)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * 해시된 비밀번호 검증
+ */
+export async function verifyPassword(password, storedHash) {
+    const hash = await hashPassword(password)
+    return hash === storedHash
+}
+
+/**
+ * 저장된 값이 SHA-256 해시인지 확인 (64자 hex)
+ */
+export function isHashed(value) {
+    return typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
+}

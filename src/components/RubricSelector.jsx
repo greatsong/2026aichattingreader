@@ -1,8 +1,8 @@
-import { useApp } from '../context/AppContext'
+import { useEvaluation } from '../context/EvaluationContext'
 import './RubricSelector.css'
 
 function RubricSelector() {
-    const { rubrics, currentRubric, selectRubric } = useApp()
+    const { rubrics, currentRubric, selectRubric } = useEvaluation()
 
     if (rubrics.length === 0) return null
 

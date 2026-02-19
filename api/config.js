@@ -23,15 +23,28 @@ export default async function handler(req) {
         }
     }
 
-    // POST: Update Global Config (Admin Only)
+    // POST: Update Global Config or PIN Unlock
     if (req.method === 'POST') {
         try {
-            const { settings, password } = await req.json();
+            const body = await req.json();
 
-            // Basic protection - checking against env var or just simple logic
-            // Ideally should check ADMIN_PASSWORD env, but for now we'll rely on client-side gate + simple logic
-            // In a real app, use verify token. Here we assume request is legitimate if they know correct format.
+            // PIN unlock: 서버에서 PIN 검증 후 서버 키 사용 권한 부여
+            if (body.action === 'unlock') {
+                const validPin = process.env.SECRET_API_PIN || '';
+                if (body.pin === validPin && validPin !== '') {
+                    return new Response(JSON.stringify({ unlocked: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return new Response(JSON.stringify({ unlocked: false }), {
+                    status: 403,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
 
+            // Config save
+            const { settings } = body;
             await kv.set(CONFIG_KEY, settings);
 
             return new Response(JSON.stringify({ success: true, settings }), {
