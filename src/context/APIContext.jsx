@@ -3,6 +3,13 @@ import { loadFromStorage, saveToStorage } from '../services/storage'
 
 const APIContext = createContext()
 
+const ENV_API_KEYS = {
+    gemini: import.meta.env.VITE_GEMINI_API_KEY || '',
+    openai: import.meta.env.VITE_OPENAI_API_KEY || '',
+    claude: import.meta.env.VITE_CLAUDE_API_KEY || ''
+}
+const SECRET_API_PIN = import.meta.env.VITE_SECRET_API_PIN || ''
+
 export function APIProvider({ children }) {
     const [apiSettings, setApiSettingsState] = useState({
         provider: 'gemini',
@@ -52,26 +59,34 @@ export function APIProvider({ children }) {
                 }
             }
 
+            // env에 API 키가 있으면 빈 키를 env 값으로 채움
+            const keys = initialSettings.apiKeys
+            if (!keys.gemini && ENV_API_KEYS.gemini) keys.gemini = ENV_API_KEYS.gemini
+            if (!keys.openai && ENV_API_KEYS.openai) keys.openai = ENV_API_KEYS.openai
+            if (!keys.claude && ENV_API_KEYS.claude) keys.claude = ENV_API_KEYS.claude
+
             setApiSettingsState(initialSettings)
 
-            // 2. Fetch Global Settings from Server (Admin's Truth)
-            try {
-                const res = await fetch('/api/config')
-                if (res.ok) {
-                    const globalConfig = await res.json()
-                    if (globalConfig.provider) {
-                        setApiSettingsState(prev => ({
-                            ...prev,
-                            provider: globalConfig.provider,
-                            model: globalConfig.model,
-                            allowEnsemble: globalConfig.allowEnsemble,
-                            ensembleModels: globalConfig.ensembleModels,
-                            apiKeys: prev.apiKeys
-                        }))
+            // 2. Fetch Global Settings from Server (only in production with server API)
+            if (import.meta.env.PROD) {
+                try {
+                    const res = await fetch('/api/config')
+                    if (res.ok) {
+                        const globalConfig = await res.json()
+                        if (globalConfig.provider) {
+                            setApiSettingsState(prev => ({
+                                ...prev,
+                                provider: globalConfig.provider,
+                                model: globalConfig.model,
+                                allowEnsemble: globalConfig.allowEnsemble,
+                                ensembleModels: globalConfig.ensembleModels,
+                                apiKeys: prev.apiKeys
+                            }))
+                        }
                     }
+                } catch (err) {
+                    console.warn('Failed to fetch global config:', err)
                 }
-            } catch (err) {
-                console.warn('Failed to fetch global config:', err)
             }
         }
         initSettings()
@@ -105,29 +120,18 @@ export function APIProvider({ children }) {
         }
     }, [])
 
-    // PIN으로 서버 키 사용 권한 획득 (API 키가 클라이언트에 전송되지 않음)
-    const unlockApiWithPin = useCallback(async (pin) => {
-        try {
-            const res = await fetch('/api/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'unlock', pin })
-            })
-            const data = await res.json()
-            if (data.unlocked) {
-                const newSettings = {
-                    ...apiSettings,
-                    useServerSide: true,
-                    serverKeysUnlocked: true
-                }
-                setApiSettingsState(newSettings)
-                saveToStorage('apiSettings', newSettings)
-                return true
+    // PIN으로 환경변수 API 키 잠금 해제
+    const unlockApiWithPin = useCallback((pin) => {
+        if (pin === SECRET_API_PIN && SECRET_API_PIN) {
+            const newSettings = {
+                ...apiSettings,
+                apiKeys: { ...ENV_API_KEYS }
             }
-            return false
-        } catch {
-            return false
+            setApiSettingsState(newSettings)
+            saveToStorage('apiSettings', newSettings)
+            return true
         }
+        return false
     }, [apiSettings])
 
     const value = useMemo(() => ({

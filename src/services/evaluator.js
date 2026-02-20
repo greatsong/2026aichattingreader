@@ -101,6 +101,9 @@ async function singleEvaluation(prompt, provider, currentModel, apiKey, apiSetti
     const useServerProxy = apiSettings.useServerSide || !hasRequiredKeys
 
     if (useServerProxy) {
+        if (!hasRequiredKeys) {
+            throw new Error(`API 키가 설정되지 않았습니다. /admin 페이지에서 ${provider.toUpperCase()} API 키를 입력해주세요.`)
+        }
         return await callServerProxy({
             prompt,
             provider,

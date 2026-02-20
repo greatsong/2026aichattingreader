@@ -10,7 +10,7 @@ import RadarChart from './RadarChart'
 import CriteriaDetail from './CriteriaDetail'
 import '../EvaluationResult.css'
 
-function EvaluationResult({ result, rubric, onReset, apiSettings, selfEvalScores }) {
+function EvaluationResult({ result, rubric, onReset, apiSettings }) {
     const [studentId, setStudentId] = useState('')
     const [studentName, setStudentName] = useState('')
     const resultsRef = useRef(null)
@@ -177,7 +177,6 @@ function EvaluationResult({ result, rubric, onReset, apiSettings, selfEvalScores
                     suggestions={suggestions}
                     studentRecordDraft={studentRecordDraft}
                     copyToClipboard={copyToClipboard}
-                    selfEvalScores={selfEvalScores}
                 />
             </div>
         </div>

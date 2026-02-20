@@ -29,7 +29,7 @@ function renderEvidence(text) {
     )
 }
 
-function CriteriaDetail({ criteriaScores, qualitativeEvaluation, suggestions, studentRecordDraft, copyToClipboard, selfEvalScores }) {
+function CriteriaDetail({ criteriaScores, qualitativeEvaluation, suggestions, studentRecordDraft, copyToClipboard }) {
     return (
         <>
             {/* 항목별 평가 */}
@@ -94,37 +94,6 @@ function CriteriaDetail({ criteriaScores, qualitativeEvaluation, suggestions, st
                                 {!cs.evidence && cs.feedback && (
                                     <p className="score-bar-feedback">{cs.feedback}</p>
                                 )}
-                                {selfEvalScores && (() => {
-                                    const selfScore = selfEvalScores.find(s => s.criterionId === cs.criterionId || s.name === cs.name)
-                                    if (!selfScore) return null
-                                    const gap = cs.score - selfScore.score
-                                    return (
-                                        <div className="self-eval-comparison">
-                                            <div className="comparison-row">
-                                                <span className="comparison-label">자기 평가</span>
-                                                <div className="comparison-bar">
-                                                    <div className="comparison-bar-fill self" style={{ width: `${(selfScore.score / selfScore.maxScore) * 100}%` }} />
-                                                </div>
-                                                <span>{selfScore.score}/{selfScore.maxScore}</span>
-                                            </div>
-                                            <div className="comparison-row">
-                                                <span className="comparison-label">AI 평가</span>
-                                                <div className="comparison-bar">
-                                                    <div className="comparison-bar-fill ai" style={{ width: `${(cs.score / cs.maxScore) * 100}%` }} />
-                                                </div>
-                                                <span>{cs.score}/{cs.maxScore}</span>
-                                            </div>
-                                            {gap !== 0 && (
-                                                <p className="comparison-gap">
-                                                    {gap > 0 ? `AI가 ${gap}점 더 높게 평가했어요` : `자기 평가가 ${Math.abs(gap)}점 더 높았어요 — 어떤 부분이 다른지 살펴보세요`}
-                                                </p>
-                                            )}
-                                            {selfScore.reason && (
-                                                <p className="comparison-gap">자기 평가 이유: {selfScore.reason}</p>
-                                            )}
-                                        </div>
-                                    )
-                                })()}
                             </div>
                         </div>
                     )})}

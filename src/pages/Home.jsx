@@ -6,9 +6,6 @@ import EvaluationResult from '../components/EvaluationResult'
 import RubricSelector from '../components/RubricSelector'
 import StudentGuide from '../components/StudentGuide'
 import { evaluateChat } from '../services/evaluator'
-import { getEvaluationHistory, saveEvaluationToHistory, clearEvaluationHistory } from '../services/evaluationHistory'
-import GrowthChart from '../components/evaluation/GrowthChart'
-import SelfEvaluation from '../components/SelfEvaluation'
 import './Home.css'
 
 function Home() {
@@ -26,11 +23,6 @@ function Home() {
     const [error, setError] = useState('')
     const [step, setStep] = useState(1) // 1: 입력, 2: 결과
     const [loadingMessage, setLoadingMessage] = useState('')
-    const [evalHistory, setEvalHistory] = useState(() => getEvaluationHistory())
-    const [selfEvalScores, setSelfEvalScores] = useState(null)
-    const [showSelfEval, setShowSelfEval] = useState(false)
-    const [pendingContent, setPendingContent] = useState('')
-    const [pendingReflection, setPendingReflection] = useState('')
 
     // Cycle loading messages
     useEffect(() => {
@@ -70,25 +62,6 @@ function Home() {
             return
         }
 
-        // Show self-evaluation step
-        setPendingContent(content)
-        setPendingReflection(reflection)
-        setShowSelfEval(true)
-    }
-
-    const handleSelfEvalComplete = async (scores) => {
-        setSelfEvalScores(scores)
-        setShowSelfEval(false)
-        await runEvaluation(pendingContent, pendingReflection)
-    }
-
-    const handleSelfEvalSkip = async () => {
-        setSelfEvalScores(null)
-        setShowSelfEval(false)
-        await runEvaluation(pendingContent, pendingReflection)
-    }
-
-    const runEvaluation = async (content, reflection) => {
         setIsLoading(true)
 
         try {
@@ -98,16 +71,12 @@ function Home() {
                 rubric: currentRubric,
                 apiSettings: {
                     ...apiSettings,
-                    useServerSide: !apiSettings.apiKey
+                    useServerSide: import.meta.env.PROD && !apiSettings.apiKey
                 }
             })
 
             setEvaluationResult(result)
             setStep(2)
-
-            // Save to history
-            const entry = saveEvaluationToHistory(result, currentRubric.name)
-            setEvalHistory(prev => [entry, ...prev])
         } catch (err) {
             console.error('Evaluation error:', err)
             setError(err.message || '평가 중 오류가 발생했습니다.')
@@ -121,17 +90,6 @@ function Home() {
         setEvaluationResult(null)
         setError('')
         setStep(1)
-        setSelfEvalScores(null)
-        setShowSelfEval(false)
-        setPendingContent('')
-        setPendingReflection('')
-    }
-
-    const handleClearHistory = () => {
-        if (confirm('평가 기록을 모두 삭제하시겠습니까?')) {
-            clearEvaluationHistory()
-            setEvalHistory([])
-        }
     }
 
     const isReady = !!currentRubric
@@ -149,9 +107,6 @@ function Home() {
                         <br />정량/정성적 피드백을 제공합니다.
                     </p>
                 </section>
-
-                {/* Growth Chart */}
-                <GrowthChart history={evalHistory} onClear={handleClearHistory} />
 
                 {/* Status Indicators */}
                 <div className="status-bar">
@@ -188,19 +143,8 @@ function Home() {
                 )}
 
 
-                {/* Self Evaluation Step */}
-                {showSelfEval && currentRubric && (
-                    <div className="self-eval-section animate-fadeIn">
-                        <SelfEvaluation
-                            rubric={currentRubric}
-                            onComplete={handleSelfEvalComplete}
-                            onSkip={handleSelfEvalSkip}
-                        />
-                    </div>
-                )}
-
                 {/* Main Content */}
-                {step === 1 && !showSelfEval && (
+                {step === 1 && (
                     <div className="input-section animate-fadeIn">
                         <ChatInput
                             onSubmit={handleChatSubmit}
@@ -229,7 +173,6 @@ function Home() {
                                 provider: apiSettings.provider === 'ensemble' ? 'ensemble' : apiSettings.provider,
                                 models: apiSettings.models
                             }}
-                            selfEvalScores={selfEvalScores}
                         />
                     </div>
                 )}
