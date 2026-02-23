@@ -60,7 +60,7 @@
 | **루브릭 관리** | 커스텀 루브릭 생성/수정/삭제 (항목별 가중치·5점 척도) |
 | **교과별 템플릿** | 일반 / 글쓰기 / 과학탐구 / 코딩 — 4종 루브릭 템플릿 즉시 사용 |
 | **JSON 불러오기** | 외부에서 설계한 루브릭을 JSON으로 가져오기 |
-| **API 설정** | Gemini / OpenAI / Claude 모델 선택, K-run(다회 평가) 설정 |
+| **고도화된 API 설정** | <ul><li>**Gemini**: gemini-2.5-pro, gemini-2.5-flash 등 최신 파라미터 지원</li><li>**OpenAI**: gpt-4o, gpt-4o-mini, o1-preview 등 강력한 추론 모델 선택 가능</li><li>**Claude**: claude-3-5-sonnet-20241022 등 지원</li><li>**K-run 지원**: 평가 1회부터 신뢰도를 위한 다수회(3회 권장) 평가 지원</li></ul> |
 | **앙상블 모드** | 3개 AI 모델을 동시 호출하여 결과 합성 |
 | **생활기록부 초안** | AI가 생성한 생활기록부 문구 초안 (복사 버튼) |
 | **PIN 잠금** | 학생에게 API 키를 숨기고 PIN으로 사용 권한 부여 |
@@ -131,7 +131,7 @@
     │   ├── RubricEditor.jsx         # 루브릭 편집기
     │   ├── SelfEvaluation.jsx       # 자기 평가 폼
     │   ├── StudentGuide.jsx         # 학생 사용 가이드
-    │   ├── ErrorBoundary.jsx        # 에러 경계
+    │   ├── ErrorBoundary.jsx        # 에러 경계 모듈 (런타임 에러 격리 및 안내)
     │   │
     │   ├── admin/                   # 관리자 탭 컴포넌트
     │   │   ├── ApiSettingsTab.jsx   #   API 설정 탭
@@ -227,7 +227,7 @@ npm run dev
 3. **API 설정** 탭에서:
    - AI 프로바이더 선택 (Gemini / OpenAI / Claude)
    - 해당 프로바이더의 API 키 입력
-   - 모델 선택 (각 프로바이더별 추천 모델 제공)
+   - 모델 선택 (각 프로바이더별 구체적인 최신 모델들을 제공합니다)
    - K-run 횟수 설정 (1회 = 빠름, 3회 = 정확)
 
 ### 로컬 개발 시 제한 사항
@@ -236,7 +236,6 @@ npm run dev
 |------|------|-------------|
 | 채팅 붙여넣기 평가 | O | O |
 | 파일 업로드 평가 | O | O |
-| ChatGPT 링크 파싱 | X | O |
 | 서버사이드 API 키 | X | O |
 | PIN 잠금 | X | O |
 | Vercel KV (글로벌 설정) | X | O |
@@ -387,7 +386,6 @@ npm run dev
 - Next.js 16 (App Router) + TypeScript + Tailwind CSS 4
 - Vercel AI SDK (스트리밍 대화)
 - Zustand (상태 관리)
-- 채팅 스크래퍼 (ChatGPT, Claude, Gemini 링크 자동 파싱)
 
 ### 실행 방법
 
@@ -448,19 +446,18 @@ npm run build
 # (Netlify, GitHub Pages, S3 등)
 ```
 
-> 이 경우 서버 프록시, PIN 잠금, 링크 파싱 기능은 사용할 수 없습니다.
-> 사용자가 관리자 페이지에서 직접 API 키를 입력하여 클라이언트에서 직접 호출하는 방식으로 동작합니다.
+> 이 경우 서버 프록시, PIN 잠금 등 서버 자원이 제한되며, 사용자가 관리자 페이지에서 직접 API 키를 입력하여 클라이언트에서 직접 호출하는 방식으로 동작합니다.
 
 ---
 
-## 보안
+## 보안 및 안정성
 
 | 영역 | 구현 방식 |
 |------|----------|
 | **관리자 비밀번호** | SHA-256 해싱 저장 (Web Crypto API), 기존 평문 자동 마이그레이션 |
 | **API 키** | 서버사이드 환경 변수에만 저장, 클라이언트 번들에 미포함 |
 | **API 호출** | AbortController 기반 30초 타임아웃 |
-| **에러 처리** | React Error Boundary로 런타임 에러 격리 |
+| **에러 처리** | React Error Boundary를 통한 런타임 에러 격리 및 안내 |
 | **학생 데이터** | 브라우저 localStorage에만 저장, 서버 전송 없음 |
 | **PIN 잠금** | 서버사이드 PIN 검증으로 API 키 접근 제어 |
 
