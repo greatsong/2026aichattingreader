@@ -60,7 +60,7 @@
 | **루브릭 관리** | 커스텀 루브릭 생성/수정/삭제 (항목별 가중치·5점 척도) |
 | **교과별 템플릿** | 일반 / 글쓰기 / 과학탐구 / 코딩 — 4종 루브릭 템플릿 즉시 사용 |
 | **JSON 불러오기** | 외부에서 설계한 루브릭을 JSON으로 가져오기 |
-| **고도화된 API 설정** | <ul><li>**Gemini**: gemini-2.5-pro, gemini-2.5-flash 등 최신 파라미터 지원</li><li>**OpenAI**: gpt-4o, gpt-4o-mini, o1-preview 등 강력한 추론 모델 선택 가능</li><li>**Claude**: claude-3-5-sonnet-20241022 등 지원</li><li>**K-run 지원**: 평가 1회부터 신뢰도를 위한 다수회(3회 권장) 평가 지원</li></ul> |
+| **고도화된 API 설정** | <ul><li>**Gemini**: gemini-2.5-flash, gemini-2.5-pro 등 최신 파라미터 지원</li><li>**OpenAI**: gpt-4o, gpt-4o-mini, o1-preview, o3-mini 등 강력한 추론 모델 선택 가능</li><li>**Claude**: claude-haiku-4-5 (추천), claude-sonnet-4-6, claude-3-5-sonnet 등 지원</li><li>**K-run 지원**: 평가 1회부터 신뢰도를 위한 다수회(3회 권장) 평가 지원</li></ul> |
 | **앙상블 모드** | 3개 AI 모델을 동시 호출하여 결과 합성 |
 | **생활기록부 초안** | AI가 생성한 생활기록부 문구 초안 (복사 버튼) |
 | **PIN 잠금** | 학생에게 API 키를 숨기고 PIN으로 사용 권한 부여 |
@@ -106,7 +106,9 @@
 │
 ├── api/                             # Vercel Edge Functions (서버리스)
 │   ├── evaluate.js                  # AI 평가 엔드포인트 (25초 타임아웃)
-│   └── config.js                    # PIN 검증 + 글로벌 설정 API
+│   ├── config.js                    # PIN 검증 + 글로벌 설정 API
+│   ├── auth.js                      # 관리자 비밀번호 검증
+│   └── verify-pin.js                # PIN 잠금 해제 검증
 │
 ├── rubric-studio/                   # 루브릭 디자인 스튜디오 (별도 Next.js 앱)
 │   └── (상세 구조는 아래 참조)
@@ -116,7 +118,8 @@
     ├── App.jsx                      # Provider 스택 + 라우터
     ├── constants.js                 # 공통 상수 (등급 색상, 모델 목록, 타임아웃)
     │
-    ├── context/                     # React Context (3분할)
+    ├── context/                     # React Context
+    │   ├── AppContext.jsx           #   앱 전역 상태
     │   ├── AuthContext.jsx          #   관리자 인증 (SHA-256 해싱)
     │   ├── APIContext.jsx           #   API 설정 (프로바이더, 모델, K-run)
     │   └── EvaluationContext.jsx    #   루브릭 + 평가 상태
@@ -129,7 +132,6 @@
     │   ├── ChatInput.jsx            # 채팅 입력 (붙여넣기 / 파일 업로드)
     │   ├── RubricSelector.jsx       # 루브릭 선택 드롭다운
     │   ├── RubricEditor.jsx         # 루브릭 편집기
-    │   ├── SelfEvaluation.jsx       # 자기 평가 폼
     │   ├── StudentGuide.jsx         # 학생 사용 가이드
     │   ├── ErrorBoundary.jsx        # 에러 경계 모듈 (런타임 에러 격리 및 안내)
     │   │
@@ -143,15 +145,13 @@
     │       ├── EvaluationResult.jsx #   결과 오케스트레이터 (PDF 다운로드 포함)
     │       ├── ScoreOverview.jsx    #   점수 요약 + 등급 메시지 + 특징
     │       ├── CriteriaDetail.jsx   #   항목별 평가 (근거 인용 + 점수 배지)
-    │       ├── RadarChart.jsx       #   레이더 차트 + 역량 균형 분석
-    │       └── GrowthChart.jsx      #   성장 추적 라인 차트 + 추세 분석
+    │       └── RadarChart.jsx       #   레이더 차트 + 역량 균형 분석
     │
     ├── services/
     │   ├── evaluator.js             # 평가 오케스트레이터 (K-run, 재시도, 서버 폴백)
     │   ├── prompts.js               # 평가 프롬프트 빌더
     │   ├── responseParser.js        # AI 응답 JSON 파싱 + 등급 계산
     │   ├── synthesis.js             # K-run 결과 합성 (점수 평균, 피드백 결합)
-    │   ├── evaluationHistory.js     # 평가 이력 CRUD (localStorage)
     │   ├── storage.js               # 저장소 유틸 + SHA-256 비밀번호 해싱
     │   ├── utils.js                 # fetchWithTimeout (AbortController)
     │   └── providers/               # AI 프로바이더 구현
@@ -205,9 +205,8 @@ OPENAI_API_KEY=your_openai_api_key
 # PIN 잠금 — 학생이 PIN 입력 시 서버 키 사용 권한 부여
 SECRET_API_PIN=your_secret_pin
 
-# === 클라이언트사이드 (Vite — VITE_ 접두사) ===
-# 관리자 비밀번호 초기값 (첫 로그인 시 사용, 이후 변경 가능)
-VITE_ADMIN_PASSWORD=your_admin_password
+# 관리자 비밀번호 (서버사이드 - 클라이언트에 노출되지 않음)
+ADMIN_PASSWORD=your_admin_password
 ```
 
 > **참고**: 로컬 개발 시에는 관리자 페이지(`/admin`)에서 직접 API 키를 입력할 수 있습니다. 서버사이드 환경 변수는 Vercel 배포 시에만 필요합니다.
@@ -223,7 +222,7 @@ npm run dev
 ### 5단계: API 키 설정 (브라우저에서)
 
 1. 우측 상단 **관리자** 클릭
-2. 비밀번호 입력 (`.env`에서 설정한 `VITE_ADMIN_PASSWORD`)
+2. 비밀번호 입력 (`.env`에서 설정한 `ADMIN_PASSWORD`)
 3. **API 설정** 탭에서:
    - AI 프로바이더 선택 (Gemini / OpenAI / Claude)
    - 해당 프로바이더의 API 키 입력
@@ -254,7 +253,7 @@ npm run dev
 | `OPENAI_API_KEY` | 서버 | 선택 | OpenAI Platform에서 발급 |
 | `CLAUDE_API_KEY` | 서버 | 선택 | Anthropic Console에서 발급 |
 | `SECRET_API_PIN` | 서버 | 선택 | 학생 PIN 잠금용 (4자리 숫자 권장) |
-| `VITE_ADMIN_PASSWORD` | 클라이언트 | 선택 | 관리자 페이지 초기 비밀번호 |
+| `ADMIN_PASSWORD` | 서버 | 선택 | 관리자 페이지 초기 비밀번호 |
 
 ### API 키 발급 방법
 
@@ -300,7 +299,6 @@ npm run dev
 │  ScoreOverview  → 종합 점수 + 등급 + 학습 모드 배지    │
 │  RadarChart     → 역량 분포 레이더 차트 + 균형 분석    │
 │  CriteriaDetail → 항목별 점수 바 + 근거 인용 + 개선 팁 │
-│  GrowthChart    → 성장 추적 라인 차트 + 추세 분석      │
 │                                                       │
 │  [자기 평가 vs AI 평가 비교] (자기 평가 시)            │
 │  [PDF 다운로드] [생활기록부 초안 복사]                  │
@@ -317,6 +315,7 @@ npm run dev
 | 80+ | B | 양호한 수준이에요 |
 | 75+ | C+ | 성장 가능성이 있어요! |
 | 70+ | C | 기초를 다지는 단계예요 |
+| 65+ | D+ | 조금 더 노력이 필요해요 |
 | 60+ | D | 더 많은 연습이 필요해요 |
 | 60 미만 | F | 다시 도전해보세요! |
 
@@ -435,6 +434,8 @@ vercel --prod
 |-----------|------|------|
 | `POST /api/evaluate` | `api/evaluate.js` | AI 평가 수행 (25초 타임아웃) |
 | `GET/POST /api/config` | `api/config.js` | PIN 검증 + 글로벌 설정 관리 |
+| `POST /api/auth` | `api/auth.js` | 관리자 비밀번호 검증 |
+| `POST /api/verify-pin` | `api/verify-pin.js` | PIN 잠금 해제 검증 |
 
 ### 정적 호스팅 (서버리스 없이)
 
