@@ -15,10 +15,9 @@ const OPENAI_MODELS = [
 ]
 
 const CLAUDE_MODELS = [
-    { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet (v2)' },
-    { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' },
-    { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
-    { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' },
+    { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (추천)' },
+    { value: 'claude-sonnet-4-6-20250514', label: 'Claude Sonnet 4.6' },
+    { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
 ]
 
 /**
@@ -163,15 +162,20 @@ function ApiSettingsTab({
                 <label htmlFor="apiPin">
                     📌 PIN을 입력하면 서버의 API 키로 평가할 수 있습니다
                 </label>
+                {apiSettings.useServerKeys && (
+                    <p style={{ color: '#22c55e', fontWeight: 600, margin: '4px 0 8px' }}>
+                        ✅ 서버 API 키가 활성화되어 있습니다
+                    </p>
+                )}
                 <div className="pin-input-wrapper">
                     <input
                         type="password"
                         id="apiPin"
                         className="input pin-input"
                         placeholder="PIN"
-                        maxLength={4}
+                        maxLength={10}
                         onKeyDown={async (e) => {
-                            if (e.key === 'Enter' && e.target.value.length === 4) {
+                            if (e.key === 'Enter' && e.target.value.length >= 4) {
                                 const success = await unlockApiWithPin(e.target.value)
                                 if (success) {
                                     showSaveMessage('서버 API 키가 활성화되었습니다!')
@@ -187,7 +191,7 @@ function ApiSettingsTab({
                         className="btn btn-secondary btn-sm"
                         onClick={async () => {
                             const pinInput = document.getElementById('apiPin')
-                            if (pinInput.value.length === 4) {
+                            if (pinInput.value.length >= 4) {
                                 const success = await unlockApiWithPin(pinInput.value)
                                 if (success) {
                                     showSaveMessage('서버 API 키가 활성화되었습니다!')

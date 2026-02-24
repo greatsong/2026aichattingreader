@@ -3,12 +3,7 @@ import { loadFromStorage, saveToStorage } from '../services/storage'
 
 const APIContext = createContext()
 
-const ENV_API_KEYS = {
-    gemini: import.meta.env.VITE_GEMINI_API_KEY || '',
-    openai: import.meta.env.VITE_OPENAI_API_KEY || '',
-    claude: import.meta.env.VITE_CLAUDE_API_KEY || ''
-}
-const SECRET_API_PIN = import.meta.env.VITE_SECRET_API_PIN || ''
+// API keys are now server-side only (no VITE_ prefix = not bundled)
 
 export function APIProvider({ children }) {
     const [apiSettings, setApiSettingsState] = useState({
@@ -33,7 +28,7 @@ export function APIProvider({ children }) {
                 models: {
                     gemini: 'gemini-2.0-flash',
                     openai: 'gpt-4o',
-                    claude: 'claude-3-5-sonnet-20240620'
+                    claude: 'claude-haiku-4-5-20251001'
                 }
             }
 
@@ -42,7 +37,7 @@ export function APIProvider({ children }) {
                 initialSettings.models = {
                     gemini: initialSettings.ensembleModels?.gemini || 'gemini-2.0-flash',
                     openai: initialSettings.ensembleModels?.openai || 'gpt-4o',
-                    claude: initialSettings.ensembleModels?.claude || 'claude-3-5-sonnet-20240620'
+                    claude: initialSettings.ensembleModels?.claude || 'claude-haiku-4-5-20251001'
                 }
                 // If there was a single model selected for the current provider, preserve it
                 if (initialSettings.model && initialSettings.provider !== 'ensemble') {
@@ -58,12 +53,6 @@ export function APIProvider({ children }) {
                     claude: ''
                 }
             }
-
-            // env에 API 키가 있으면 빈 키를 env 값으로 채움
-            const keys = initialSettings.apiKeys
-            if (!keys.gemini && ENV_API_KEYS.gemini) keys.gemini = ENV_API_KEYS.gemini
-            if (!keys.openai && ENV_API_KEYS.openai) keys.openai = ENV_API_KEYS.openai
-            if (!keys.claude && ENV_API_KEYS.claude) keys.claude = ENV_API_KEYS.claude
 
             setApiSettingsState(initialSettings)
 
@@ -120,18 +109,30 @@ export function APIProvider({ children }) {
         }
     }, [])
 
-    // PIN으로 환경변수 API 키 잠금 해제
-    const unlockApiWithPin = useCallback((pin) => {
-        if (pin === SECRET_API_PIN && SECRET_API_PIN) {
-            const newSettings = {
-                ...apiSettings,
-                apiKeys: { ...ENV_API_KEYS }
+    // PIN으로 서버 API 키 잠금 해제 (서버사이드 검증)
+    const unlockApiWithPin = useCallback(async (pin) => {
+        try {
+            const response = await fetch('/api/verify-pin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin })
+            })
+            const data = await response.json()
+
+            if (data.success) {
+                const newSettings = {
+                    ...apiSettings,
+                    useServerKeys: true
+                }
+                setApiSettingsState(newSettings)
+                saveToStorage('apiSettings', newSettings)
+                return true
             }
-            setApiSettingsState(newSettings)
-            saveToStorage('apiSettings', newSettings)
-            return true
+            return false
+        } catch (error) {
+            console.error('PIN verification failed:', error)
+            return false
         }
-        return false
     }, [apiSettings])
 
     const value = useMemo(() => ({

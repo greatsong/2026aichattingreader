@@ -1,33 +1,24 @@
 /**
  * Claude API 호출 모듈
+ * CORS 제한으로 항상 서버 프록시(/api/evaluate) 경유
  */
 import { fetchWithTimeout } from '../utils'
 
 /**
- * Claude API 호출
+ * Claude API 호출 (서버 프록시 경유)
  */
-export async function callClaudeAPI(prompt, apiKey, model = 'claude-3-5-sonnet-20241022') {
-    const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
+export async function callClaudeAPI(prompt, apiKey, model = 'claude-haiku-4-5-20251001') {
+    const response = await fetchWithTimeout('/api/evaluate', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': apiKey,
-            'anthropic-version': '2024-06-01'
-        },
-        body: JSON.stringify({
-            model,
-            max_tokens: 8192,
-            messages: [
-                { role: 'user', content: prompt }
-            ]
-        })
-    }, 30000)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, provider: 'claude', model })
+    }, 60000)
 
     if (!response.ok) {
         const error = await response.json().catch(() => ({}))
-        throw new Error(error.error?.message || `Claude API 오류: ${response.status}`)
+        throw new Error(error.error || `Claude API 오류: ${response.status}`)
     }
 
     const data = await response.json()
-    return data.content?.[0]?.text || ''
+    return data.text || ''
 }

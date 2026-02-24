@@ -73,12 +73,11 @@ export const PROVIDER_MODELS = {
         helpLabel: 'OpenAI Platform'
     },
     claude: {
-        defaults: ['claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022', 'claude-3-opus-20240229', 'claude-3-haiku-20240307'],
+        defaults: ['claude-haiku-4-5-20251001', 'claude-sonnet-4-6-20250514', 'claude-3-5-sonnet-20241022'],
         labels: {
-            'claude-3-5-sonnet-20241022': 'Claude 3.5 Sonnet (v2)',
-            'claude-3-5-haiku-20241022': 'Claude 3.5 Haiku',
-            'claude-3-opus-20240229': 'Claude 3 Opus',
-            'claude-3-haiku-20240307': 'Claude 3 Haiku'
+            'claude-haiku-4-5-20251001': 'Claude Haiku 4.5 (추천)',
+            'claude-sonnet-4-6-20250514': 'Claude Sonnet 4.6',
+            'claude-3-5-sonnet-20241022': 'Claude 3.5 Sonnet'
         },
         borderColor: '#fff3e0',
         emoji: '🟧',

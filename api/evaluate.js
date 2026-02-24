@@ -61,7 +61,7 @@ export default async function handler(req) {
             const results = await Promise.allSettled([
                 withTimeout(callProvider('gemini', prompt, clientApiKeys.gemini || SERVER_KEYS.gemini, 'gemini-2.5-flash'), TIMEOUT_MS),
                 withTimeout(callProvider('openai', prompt, clientApiKeys.openai || SERVER_KEYS.openai, 'gpt-4o-mini'), TIMEOUT_MS),
-                withTimeout(callProvider('claude', prompt, clientApiKeys.claude || SERVER_KEYS.claude, 'claude-3-5-haiku-20241022'), TIMEOUT_MS)
+                withTimeout(callProvider('claude', prompt, clientApiKeys.claude || SERVER_KEYS.claude, 'claude-haiku-4-5-20251001'), TIMEOUT_MS)
             ]);
 
             const successfulResults = results
@@ -142,7 +142,7 @@ async function callProvider(provider, prompt, apiKey, model) {
             })
         };
     } else if (provider === 'claude') {
-        const targetModel = model || 'claude-3-5-sonnet-20241022';
+        const targetModel = model || 'claude-haiku-4-5-20251001';
         url = 'https://api.anthropic.com/v1/messages';
         options = {
             method: 'POST',
