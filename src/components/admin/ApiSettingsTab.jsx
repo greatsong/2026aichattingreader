@@ -37,9 +37,11 @@ function ApiSettingsTab({
     unlockApiWithPin,
     showSaveMessage,
 }) {
-    const handleApiSave = () => {
-        saveGlobalSettings(apiSettings)
-        showSaveMessage('API 설정이 전 세계(서버 및 로컬)에 저장되었습니다.')
+    const handleApiSave = async () => {
+        const savedToServer = await saveGlobalSettings(apiSettings)
+        showSaveMessage(savedToServer
+            ? 'API 설정이 서버와 이 브라우저에 저장되었습니다.'
+            : 'API 설정을 이 브라우저에만 저장했습니다. 서버 저장에 실패했습니다.')
     }
 
     return (

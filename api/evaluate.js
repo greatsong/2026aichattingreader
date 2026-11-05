@@ -1,5 +1,6 @@
 
 // GoogleGenerativeAI import removed to support Edge Runtime
+import { clientAddress, createCounter, isAllowedOrigin, serverKeysAllowed, validateEvaluateBody } from './_lib/guard.js';
 
 const SERVER_KEYS = {
     gemini: process.env.GEMINI_API_KEY || '',
@@ -10,6 +11,10 @@ const SERVER_KEYS = {
 export const config = {
     runtime: 'edge',
 };
+
+// 학교 공용 IP에서 한 학급이 재시도까지 포함해 평가해도 걸리지 않는 값이다.
+const HOURLY_LIMIT_PER_ADDRESS = 600;
+const requestCounter = createCounter(60 * 60 * 1000);
 
 // Learning-Oriented System Prompt
 const LEARNING_SYSTEM_PROMPT = `
@@ -40,13 +45,36 @@ const LEARNING_SYSTEM_PROMPT = `
 }
 `;
 
+// 사용자의 키가 없는 요청에 서버 키를 내줄지 판단한다. 호출 직전에 세어 거절된 요청이 한도를 쓰지 않게 한다.
+function checkServerKeyUse(req) {
+    if (!serverKeysAllowed(process.env)) {
+        return new Response(JSON.stringify({ error: '관리자 화면에서 API 키를 입력해 주세요.' }), { status: 403 });
+    }
+    const address = clientAddress(req);
+    if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
+        return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
+    }
+    requestCounter.add(address);
+    return null;
+}
+
 export default async function handler(req) {
     if (req.method !== 'POST') {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
     }
 
+    if (!isAllowedOrigin(req.headers.get('origin') || req.headers.get('referer'), process.env)) {
+        return new Response(JSON.stringify({ error: '허용되지 않은 Origin입니다.' }), { status: 403 });
+    }
+
     try {
-        const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = await req.json();
+        const body = await req.json();
+        const invalid = validateEvaluateBody(body);
+        if (invalid) {
+            return new Response(JSON.stringify({ error: invalid }), { status: 400 });
+        }
+
+        const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = body;
 
         // Helper for handling timeouts - return null instead of throwing to allow partial success
         const withTimeout = (promise, ms) => Promise.race([
@@ -58,6 +86,11 @@ export default async function handler(req) {
 
         // 1. Ensemble Mode
         if (provider === 'ensemble') {
+            const missingClientKey = ['gemini', 'openai', 'claude'].some((name) => !clientApiKeys[name]);
+            if (missingClientKey) {
+                const denied = checkServerKeyUse(req);
+                if (denied) return denied;
+            }
             const results = await Promise.allSettled([
                 withTimeout(callProvider('gemini', prompt, clientApiKeys.gemini || SERVER_KEYS.gemini, 'gemini-2.5-flash'), TIMEOUT_MS),
                 withTimeout(callProvider('openai', prompt, clientApiKeys.openai || SERVER_KEYS.openai, 'gpt-4o-mini'), TIMEOUT_MS),
@@ -81,7 +114,12 @@ export default async function handler(req) {
         }
 
         // 2. Single Provider Mode
-        const effectiveApiKey = singleApiKey || clientApiKeys[provider] || SERVER_KEYS[provider];
+        const clientKey = singleApiKey || clientApiKeys[provider];
+        if (!clientKey) {
+            const denied = checkServerKeyUse(req);
+            if (denied) return denied;
+        }
+        const effectiveApiKey = clientKey || SERVER_KEYS[provider];
 
         if (!effectiveApiKey) {
             return new Response(JSON.stringify({ error: `API Key for ${provider} not configured.` }), { status: 500 });
