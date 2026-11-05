@@ -1,6 +1,6 @@
 
 // GoogleGenerativeAI import removed to support Edge Runtime
-import { clientAddress, createCounter, isAllowedOrigin, isServerKeyModelAllowed, validateEvaluateBody } from './_lib/guard.js';
+import { clientAddress, createCounter, isAllowedOrigin, serverKeysAllowed, validateEvaluateBody } from './_lib/guard.js';
 
 const SERVER_KEYS = {
     gemini: process.env.GEMINI_API_KEY || '',
@@ -45,6 +45,19 @@ const LEARNING_SYSTEM_PROMPT = `
 }
 `;
 
+// 사용자의 키가 없는 요청에 서버 키를 내줄지 판단한다. 호출 직전에 세어 거절된 요청이 한도를 쓰지 않게 한다.
+function checkServerKeyUse(req) {
+    if (!serverKeysAllowed(process.env)) {
+        return new Response(JSON.stringify({ error: '관리자 화면에서 API 키를 입력해 주세요.' }), { status: 403 });
+    }
+    const address = clientAddress(req);
+    if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
+        return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
+    }
+    requestCounter.add(address);
+    return null;
+}
+
 export default async function handler(req) {
     if (req.method !== 'POST') {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
@@ -61,12 +74,6 @@ export default async function handler(req) {
             return new Response(JSON.stringify({ error: invalid }), { status: 400 });
         }
 
-        const address = clientAddress(req);
-        if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
-            return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
-        }
-        requestCounter.add(address);
-
         const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = body;
 
         // Helper for handling timeouts - return null instead of throwing to allow partial success
@@ -79,6 +86,11 @@ export default async function handler(req) {
 
         // 1. Ensemble Mode
         if (provider === 'ensemble') {
+            const missingClientKey = ['gemini', 'openai', 'claude'].some((name) => !clientApiKeys[name]);
+            if (missingClientKey) {
+                const denied = checkServerKeyUse(req);
+                if (denied) return denied;
+            }
             const results = await Promise.allSettled([
                 withTimeout(callProvider('gemini', prompt, clientApiKeys.gemini || SERVER_KEYS.gemini, 'gemini-2.5-flash'), TIMEOUT_MS),
                 withTimeout(callProvider('openai', prompt, clientApiKeys.openai || SERVER_KEYS.openai, 'gpt-4o-mini'), TIMEOUT_MS),
@@ -103,8 +115,9 @@ export default async function handler(req) {
 
         // 2. Single Provider Mode
         const clientKey = singleApiKey || clientApiKeys[provider];
-        if (!clientKey && !isServerKeyModelAllowed(provider, model)) {
-            return new Response(JSON.stringify({ error: '이 모델은 자신의 API 키를 입력해야 사용할 수 있습니다.' }), { status: 400 });
+        if (!clientKey) {
+            const denied = checkServerKeyUse(req);
+            if (denied) return denied;
         }
         const effectiveApiKey = clientKey || SERVER_KEYS[provider];
 

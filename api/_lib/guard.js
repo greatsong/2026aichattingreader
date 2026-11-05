@@ -30,16 +30,13 @@ export function isAllowedOrigin(headerValue, env = {}) {
     ));
 }
 
-// 서버 키로 호출할 수 있는 모델. src/constants.js의 PROVIDER_MODELS 기본 목록과 서버 기본값이다.
-// 직접 입력한 모델은 자기 API 키를 넣었을 때만 사용할 수 있다.
-const SERVER_KEY_MODELS = {
-    gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-2.0-pro-exp-02-05'],
-    openai: ['gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o3-mini'],
-    claude: ['claude-haiku-4-5-20251001', 'claude-sonnet-4-6', 'claude-opus-4-7'],
-};
-
-export function isServerKeyModelAllowed(provider, model) {
-    return !model || (SERVER_KEY_MODELS[provider] || []).includes(model);
+/**
+ * 서버에 저장된 AI 키는 기본으로 사용하지 않는다. 요청에 사용자의 키가 없으면 거절한다.
+ * Origin은 위조할 수 있고 평가 요청을 증명할 세션이 없으므로, 인증을 넣기 전까지 서버 키를 열어 두지 않는다.
+ * 다시 열려면 Vercel 환경변수 ALLOW_SERVER_KEYS=1을 설정한다.
+ */
+export function serverKeysAllowed(env = {}) {
+    return env.ALLOW_SERVER_KEYS === '1';
 }
 
 export function validateEvaluateBody(body) {
@@ -69,10 +66,6 @@ export function createCounter(windowMs) {
             const entry = current(key, now);
             if (entry) entry.count += 1;
             else entries.set(key, { count: 1, resetAt: now + windowMs });
-        },
-        remove(key, now = Date.now()) {
-            const entry = current(key, now);
-            if (entry && entry.count > 0) entry.count -= 1;
         },
     };
 }

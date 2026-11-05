@@ -11,7 +11,7 @@ export async function callClaudeAPI(prompt, apiKey, model = 'claude-haiku-4-5-20
     const response = await fetchWithTimeout('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, provider: 'claude', model })
+        body: JSON.stringify({ prompt, provider: 'claude', model, apiKey })
     }, 60000)
 
     if (!response.ok) {

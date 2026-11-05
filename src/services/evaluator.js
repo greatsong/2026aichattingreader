@@ -54,7 +54,8 @@ export async function evaluateChat({ chatContent, reflection, rubric, apiSetting
                     const response = await callServerProxy({
                         prompt,
                         provider,
-                        model: currentModel
+                        model: currentModel,
+                        apiKey
                     })
                     return parseEvaluationResponse(response, rubric)
                 } catch (serverError) {
@@ -107,7 +108,8 @@ async function singleEvaluation(prompt, provider, currentModel, apiKey, apiSetti
         return await callServerProxy({
             prompt,
             provider,
-            model: currentModel
+            model: currentModel,
+            apiKey
         })
     }
 
@@ -118,11 +120,11 @@ async function singleEvaluation(prompt, provider, currentModel, apiKey, apiSetti
 /**
  * Server Proxy 호출 (/api/evaluate)
  */
-async function callServerProxy({ prompt, provider, model }) {
+async function callServerProxy({ prompt, provider, model, apiKey }) {
     const response = await fetchWithTimeout('/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, provider, model })
+        body: JSON.stringify({ prompt, provider, model, apiKey })
     }, 30000)
 
     if (!response.ok) {
