@@ -1,5 +1,6 @@
 
 // GoogleGenerativeAI import removed to support Edge Runtime
+import { clientAddress, createCounter, isAllowedOrigin, validateEvaluateBody } from './_lib/guard.js';
 
 const SERVER_KEYS = {
     gemini: process.env.GEMINI_API_KEY || '',
@@ -10,6 +11,10 @@ const SERVER_KEYS = {
 export const config = {
     runtime: 'edge',
 };
+
+// 학교 공용 IP에서 한 학급이 재시도까지 포함해 평가해도 걸리지 않는 값이다.
+const HOURLY_LIMIT_PER_ADDRESS = 600;
+const requestCounter = createCounter(60 * 60 * 1000);
 
 // Learning-Oriented System Prompt
 const LEARNING_SYSTEM_PROMPT = `
@@ -45,8 +50,23 @@ export default async function handler(req) {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 });
     }
 
+    if (!isAllowedOrigin(req.headers.get('origin') || req.headers.get('referer'), process.env)) {
+        return new Response(JSON.stringify({ error: '허용되지 않은 Origin입니다.' }), { status: 403 });
+    }
+
+    const address = clientAddress(req);
+    if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
+        return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
+    }
+    requestCounter.add(address);
+
     try {
-        const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = await req.json();
+        const body = await req.json();
+        const invalid = validateEvaluateBody(body);
+        if (invalid) {
+            return new Response(JSON.stringify({ error: invalid }), { status: 400 });
+        }
+        const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = body;
 
         // Helper for handling timeouts - return null instead of throwing to allow partial success
         const withTimeout = (promise, ms) => Promise.race([
