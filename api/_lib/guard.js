@@ -7,7 +7,7 @@ const ALLOWED_PROVIDERS = ['gemini', 'openai', 'claude', 'ensemble'];
 const MODEL_RE = /^[A-Za-z0-9._:-]{1,100}$/;
 const ALLOWED_ORIGINS = [
     'https://2026aichattingreader.vercel.app',
-    /^https:\/\/2026aichattingreader-[a-z0-9-]+\.vercel\.app$/,
+    /^https:\/\/2026aichattingreader(?:-[a-z0-9-]+)?-greatsongs-projects\.vercel\.app$/,
     'http://localhost:5173',
     'http://localhost:3000',
 ];
@@ -28,6 +28,18 @@ export function isAllowedOrigin(headerValue, env = {}) {
     return [...ALLOWED_ORIGINS, ...extra].some((entry) => (
         typeof entry === 'string' ? entry === origin : entry.test(origin)
     ));
+}
+
+// 서버 키로 호출할 수 있는 모델. src/constants.js의 PROVIDER_MODELS 기본 목록과 서버 기본값이다.
+// 직접 입력한 모델은 자기 API 키를 넣었을 때만 사용할 수 있다.
+const SERVER_KEY_MODELS = {
+    gemini: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-2.0-pro-exp-02-05'],
+    openai: ['gpt-4o', 'gpt-4o-mini', 'o1-preview', 'o3-mini'],
+    claude: ['claude-haiku-4-5-20251001', 'claude-sonnet-4-6', 'claude-opus-4-7'],
+};
+
+export function isServerKeyModelAllowed(provider, model) {
+    return !model || (SERVER_KEY_MODELS[provider] || []).includes(model);
 }
 
 export function validateEvaluateBody(body) {
@@ -57,6 +69,10 @@ export function createCounter(windowMs) {
             const entry = current(key, now);
             if (entry) entry.count += 1;
             else entries.set(key, { count: 1, resetAt: now + windowMs });
+        },
+        remove(key, now = Date.now()) {
+            const entry = current(key, now);
+            if (entry && entry.count > 0) entry.count -= 1;
         },
     };
 }

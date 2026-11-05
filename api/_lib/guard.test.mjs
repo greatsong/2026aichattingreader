@@ -6,6 +6,9 @@ test('허용 출처만 통과한다', () => {
   assert.ok(isAllowedOrigin('https://2026aichattingreader.vercel.app'));
   assert.ok(isAllowedOrigin('https://2026aichattingreader.vercel.app/admin'));
   assert.ok(isAllowedOrigin('https://2026aichattingreader-abc123-greatsongs-projects.vercel.app'));
+  assert.ok(isAllowedOrigin('https://2026aichattingreader-greatsongs-projects.vercel.app'));
+  assert.ok(isAllowedOrigin('https://2026aichattingreader-git-main-greatsongs-projects.vercel.app'));
+  assert.ok(!isAllowedOrigin('https://2026aichattingreader-evil.vercel.app'));
   assert.ok(isAllowedOrigin('http://localhost:5173'));
   assert.ok(!isAllowedOrigin(''));
   assert.ok(!isAllowedOrigin(null));

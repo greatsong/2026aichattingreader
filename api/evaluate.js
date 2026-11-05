@@ -1,6 +1,6 @@
 
 // GoogleGenerativeAI import removed to support Edge Runtime
-import { clientAddress, createCounter, isAllowedOrigin, validateEvaluateBody } from './_lib/guard.js';
+import { clientAddress, createCounter, isAllowedOrigin, isServerKeyModelAllowed, validateEvaluateBody } from './_lib/guard.js';
 
 const SERVER_KEYS = {
     gemini: process.env.GEMINI_API_KEY || '',
@@ -54,18 +54,19 @@ export default async function handler(req) {
         return new Response(JSON.stringify({ error: '허용되지 않은 Origin입니다.' }), { status: 403 });
     }
 
-    const address = clientAddress(req);
-    if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
-        return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
-    }
-    requestCounter.add(address);
-
     try {
         const body = await req.json();
         const invalid = validateEvaluateBody(body);
         if (invalid) {
             return new Response(JSON.stringify({ error: invalid }), { status: 400 });
         }
+
+        const address = clientAddress(req);
+        if (requestCounter.count(address) >= HOURLY_LIMIT_PER_ADDRESS) {
+            return new Response(JSON.stringify({ error: '요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요.' }), { status: 429 });
+        }
+        requestCounter.add(address);
+
         const { prompt, provider = 'gemini', model, apiKey: singleApiKey, apiKeys: clientApiKeys = {} } = body;
 
         // Helper for handling timeouts - return null instead of throwing to allow partial success
@@ -101,7 +102,11 @@ export default async function handler(req) {
         }
 
         // 2. Single Provider Mode
-        const effectiveApiKey = singleApiKey || clientApiKeys[provider] || SERVER_KEYS[provider];
+        const clientKey = singleApiKey || clientApiKeys[provider];
+        if (!clientKey && !isServerKeyModelAllowed(provider, model)) {
+            return new Response(JSON.stringify({ error: '이 모델은 자신의 API 키를 입력해야 사용할 수 있습니다.' }), { status: 400 });
+        }
+        const effectiveApiKey = clientKey || SERVER_KEYS[provider];
 
         if (!effectiveApiKey) {
             return new Response(JSON.stringify({ error: `API Key for ${provider} not configured.` }), { status: 500 });

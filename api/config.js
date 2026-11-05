@@ -20,8 +20,14 @@ function json(status, body) {
 async function checkPin(req, pin) {
     const address = clientAddress(req);
     if (pinFailures.count(address) >= PIN_FAILURE_LIMIT) return 'blocked';
-    if (await secretEquals(pin, process.env.SECRET_API_PIN || '')) return 'ok';
+    // PIN이 없는 요청은 대입이 아니므로 세지 않는다
+    if (typeof pin !== 'string' || pin === '') return 'wrong';
+    // 비교 전에 세어 병렬 요청이 한도 검사를 함께 통과하지 못하게 한다
     pinFailures.add(address);
+    if (await secretEquals(pin, process.env.SECRET_API_PIN || '')) {
+        pinFailures.remove(address);
+        return 'ok';
+    }
     return 'wrong';
 }
 
@@ -55,6 +61,7 @@ export default async function handler(req) {
             // Config save: PIN을 확인한 요청만 저장하고, 허용 필드만 남긴다
             if (result !== 'ok') return json(403, { error: 'PIN이 필요합니다.' });
             const settings = sanitizeConfig(body?.settings);
+            if (!settings.provider) return json(400, { error: '저장할 설정이 올바르지 않습니다.' });
             await kv.set(CONFIG_KEY, settings);
             return json(200, { success: true, settings });
         } catch (error) {

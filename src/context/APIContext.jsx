@@ -97,15 +97,18 @@ export function APIProvider({ children }) {
         // Save to Local
         setApiSettingsState(settings)
         saveToStorage('apiSettings', settings)
-        // Save to Server (Global)
+        // Save to Server (Global) — API 키는 서버로 보내지 않는다
+        const { provider, model, allowEnsemble, ensembleModels } = settings
         try {
-            await fetch('/api/config', {
+            const res = await fetch('/api/config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ settings })
+                body: JSON.stringify({ settings: { provider, model, allowEnsemble, ensembleModels } })
             })
+            return res.ok
         } catch (e) {
             console.error('Failed to save global config', e)
+            return false
         }
     }, [])
 
